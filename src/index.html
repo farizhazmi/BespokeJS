@@ -4,18 +4,103 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <title>project</title>
+  <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
   <link rel="stylesheet" type="text/css" href="css/main.css">
 </head>
 <body>
 
 <div class="wrapper">
-  <div class="info">
-    <h3 class="game-name">PENEROBOS TROTOAR</h3>
-    <h4 class="instruction">TEKAN (space) untuk mulai dan lompat, tekan (p) untuk pause</h4>
+  <div class="nyawa">
+    <ul>
+      <li><img src="images/hati.png" /></li>
+      <li><img src="images/hati.png" /></li>
+      <li><img src="images/hati.png" /></li>
+    </ul>
   </div>
+
+  <div class="info">
+    <h3 class="game-name">Solo Run</h3>
+    <h4 class="instruction">TEKAN (space) untuk mulai dan lompat</h4>
+  </div>
+
+  <div class="score">
+    <h1>0</h1>
+  </div>
+
+  <div id="player" class="jalan"></div>
+
+  <div id="motor"></div>
+
+
+
 </div>
 
-<script src="js/main.js"></script>
+
+<script src="js/jquery.js"></script>
+<script>
+  let info = $(".info");
+  let score = $(".score");
+  let nyawa = $(".nyawa");
+  let player = $("#player");
+  let isReady = false;
+
+  function viewInfo(){
+    return info.animate({'top' : '25'}, 1000).promise();
+  }
+  function hiddenInfo(){
+    return info.animate({'top' : '-125'}, 1000).promise();
+  }
+  function viewLife(){
+    return nyawa.animate({'top' : '15'}, 1000).promise();
+  }
+  function hiddenLife(){
+    return nyawa.animate({'top' : '-150'}, 1000).promise();
+  }
+  function viewScore(){
+    return score.animate({"top" : "80"}, 1000).promise();
+  }
+  function hiddenScore(){
+    return score.animate({"top" : "-150"}, 1000).promise();
+  }
+  function jump(){
+    player.addClass("lompat");
+    //berhenti lompat
+    player.on("animationend", function() {
+        $(this).removeClass("lompat");
+    });
+  }
+  
+  function ready(){
+    hiddenLife();
+    hiddenScore();
+    viewInfo();
+  }
+  function play(){
+    hiddenInfo();
+    viewScore();
+    viewLife();
+  }
+  function control(){
+    $(document).on("keydown", function(e){
+      if(e.keyCode == 32){
+        if(isReady){
+          jump();
+        }
+        play();
+        isReady = true;
+      }else if(e.keyCode == 27){
+        ready();
+      }
+    });
+  }
+
+  $(document).ready(function() {
+    viewInfo();
+    control();
+  });
+  
+</script>
+
 
 </body>
 </html>
