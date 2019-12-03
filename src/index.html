@@ -29,7 +29,9 @@
 
   <div id="player" class="jalan"></div>
 
-  <div id="motor"></div>
+  <div id="frameMotor">
+
+  </div>
 
 
 
@@ -43,6 +45,12 @@
   let nyawa = $(".nyawa");
   let player = $("#player");
   let isReady = false;
+  let motor = false;
+  let readyMotor = false;
+  let durasi = 3000;
+  let strNilai = 0;
+  let aturOrang = {'lebar' : 50, 'tinggi' : 80};
+  let frameMotor = $("#frameMotor");
 
   function viewInfo(){
     return info.animate({'top' : '25'}, 1000).promise();
@@ -59,9 +67,11 @@
   function viewScore(){
     return score.animate({"top" : "80"}, 1000).promise();
   }
+
   function hiddenScore(){
     return score.animate({"top" : "-150"}, 1000).promise();
   }
+
   function jump(){
     player.addClass("lompat");
     //berhenti lompat
@@ -69,7 +79,81 @@
         $(this).removeClass("lompat");
     });
   }
-  
+
+  function range(min, max){
+    /*	karena Javascript tidak punya fungsi range, maka kita buat range sendiri
+
+      math floor lakukan pembulatan angka
+      math random mendapatkan angka acak, contohnya : 1.28911
+    */
+    durasi = Math.floor(Math.random() * (max-min+1) + min);
+
+    return durasi;
+  }
+
+  function bikinMotor(){
+    setTimeout(function(){
+      //bikin emelement motor
+      frameMotor.prepend('<div class="motor"></div>');
+
+      console.log("masuk");
+      motor = $('.motor');
+      //animasi motor
+      let jeniMotor = range(1, 3);
+      let pilihMotor = 'motor' + jeniMotor;
+      motor.first().addClass(pilihMotor + ' tantangan belumLewat');
+      motor.first().css({'animation' : 'maju 18s forwards,  '+ pilihMotor +' .3s steps(3) infinite'});
+    }, durasi);
+    
+  }
+
+  function collisionMotor(){
+    timerCollision = setTimeout(function(){
+              motor.each(function(index, obj){
+                //kalau punya hasClass baru perhitungkan collision
+                  //orang
+                  let posOrang = { 'lebar'	: player.width(),
+                          'tinggi'	: player.height(),
+                          'x'		: player.offset().left,
+                          'y'		: player.offset().top };
+                  
+                  //motor yang masih memiliki class tantangan
+                  let posMotor = { 'lebar'	: $(this).width(),
+                          'tinggi'	: $(this).height(),
+                          'x'		: $(this).offset().left,
+                          'y'		: $(this).offset().top };
+
+                  //50 karena kepala lebih besar dari badan, padahal yang di tabrak badan, jadi kurangin 50
+                  let lebarOrang = posOrang.x + posOrang.lebar - aturOrang.lebar;
+                  let lebarMotor = posMotor.x + posMotor.lebar;
+                  
+                  let tinggiOrang = posOrang.y + posOrang.tinggi - aturOrang.tinggi;
+                  let tinggiMotor = posMotor.y + posMotor.tinggi;
+
+                  if (lebarOrang >= posMotor.x && posOrang.x <= lebarMotor && tinggiOrang >= posMotor.y){				
+                    if($(this).hasClass('tantangan')){
+                      mati();
+                    }
+                    $(this).removeClass('belumLewat');
+                    $(this).removeClass('tantangan');
+                  }
+                  else if(posOrang.x > lebarMotor){
+                    if($(this).hasClass('tantangan')){
+                      $(this).removeClass('tantangan');
+                      $(this).removeClass('belumLewat');
+                      
+                      // //nilai
+                      strNilai = strNilai + 1;
+                      $(".score h1").text(strNilai);
+                      hapusMotor();
+                    }
+                  }
+              });
+              
+              collisionMotor();
+            }, 1);
+  }
+
   function ready(){
     hiddenLife();
     hiddenScore();
@@ -79,6 +163,10 @@
     hiddenInfo();
     viewScore();
     viewLife();
+    bikinMotor();
+    collisionMotor();
+
+    
   }
   function control(){
     $(document).on("keydown", function(e){
@@ -87,11 +175,17 @@
           jump();
         }
         play();
+        
+        readyMotor = true;
         isReady = true;
       }else if(e.keyCode == 27){
         ready();
       }
     });
+    // akan dipanggil tanpa harus menekan keyboards
+
+    
+    
   }
 
   $(document).ready(function() {
