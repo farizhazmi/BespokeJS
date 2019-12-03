@@ -11,6 +11,7 @@
     background-position: 0 0;
     background-size: auto 100%;
     animation: animasiBackground 100s linear infinite;
+    overflow-x: hidden;
 }
 @keyframes animasiBackground {
     from {
@@ -120,7 +121,10 @@
     }
 }
 
-.motor {
+
+
+  /*MOTOR*/
+  .motor {
     height: 136px;
     margin: 0px auto;
     background: url('../images/motor.png');
@@ -132,7 +136,7 @@
   
   @keyframes maju {
       from { left:1380px; }
-      to{ left: -750px; }
+      to{ left: 750px; }
   }
   
   .motor1{
