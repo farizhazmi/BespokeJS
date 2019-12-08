@@ -41,19 +41,28 @@
 <script src="js/jquery.js"></script>
 <script>
   let info = $(".info");
+  let infoGameOver = $(".infoGameOver");
   let score = $(".score");
   let nyawa = $(".nyawa");
   let player = $("#player");
+  let totalNyawa = 3;
   let isReady = false;
   let motor = false;
   let readyMotor = false;
-  let durasi = 3000;
+  let durasi = 2000;
   let strNilai = 0;
+  let game = $(".wrapper");
   let aturOrang = {'lebar' : 50, 'tinggi' : 80};
   let frameMotor = $("#frameMotor");
 
   function viewInfo(){
     return info.animate({'top' : '25'}, 1000).promise();
+  }
+  function viewGameOver(){
+    return infoGameOver.animate({'top' : '25'}, 1000).promise();
+  }
+  function hiddenInfoGameOver(){
+    return infoGameOver.animate({'top' : '-125'}, 1000).promise();
   }
   function hiddenInfo(){
     return info.animate({'top' : '-125'}, 1000).promise();
@@ -90,24 +99,68 @@
 
     return durasi;
   }
+  
 
+  function mati(){
+    totalNyawa -= 1;
+    $('.nyawa ul li').first().remove();
+
+    game.addClass('pause');
+    player.addClass('mati');
+
+    if(totalNyawa == 0){
+      $('.game-name').text("Game Over");
+      viewInfo();
+      game.addClass('reset');
+    }else{
+      game.addClass('lanjutMain');
+    }
+    isReady = false;
+  }
+
+  function intervalMotor(){
+    timerBikinMotor = setTimeout(function(){
+            //bikin motor
+            bikinMotor();
+              
+              //clear timeout saatini
+              window.clearTimeout(timerBikinMotor);
+            
+            //atur durasi keluar motor antara 3 detik sampai 6 detk
+            durasi = range(1000, 1500);
+
+              intervalMotor();
+        }, durasi);
+  }
+  
   function bikinMotor(){
     setTimeout(function(){
-      //bikin emelement motor
-      frameMotor.prepend('<div class="motor"></div>');
+      $cnt = 1;
+      $('#frameMotor .motor').each(function(){
+        if($(this).hasClass("belumLewat")){
+          $cnt++;
+        }
+      });
 
-      console.log("masuk");
-      motor = $('.motor');
-      //animasi motor
-      let jeniMotor = range(1, 3);
-      let pilihMotor = 'motor' + jeniMotor;
-      motor.first().addClass(pilihMotor + ' tantangan belumLewat');
-      motor.first().css({'animation' : 'maju 18s forwards,  '+ pilihMotor +' .3s steps(3) infinite'});
+      if($cnt <= 1){
+        //bikin emelement motor
+        frameMotor.prepend('<div class="motor"></div>');
+
+        motor = $('.motor');
+        //animasi motor
+        let jeniMotor = range(1, 3);
+        let pilihMotor = 'motor' + jeniMotor;
+        motor.first().addClass(pilihMotor + ' tantangan belumLewat');
+        motor.first().css({'animation' : 'maju 18s forwards,  '+ pilihMotor +' .3s steps(3) infinite'});
+      }
+      
+      
     }, durasi);
     
   }
 
   function collisionMotor(){
+    motor = $('.motor');
     timerCollision = setTimeout(function(){
               motor.each(function(index, obj){
                 //kalau punya hasClass baru perhitungkan collision
@@ -158,14 +211,21 @@
     hiddenLife();
     hiddenScore();
     viewInfo();
+    game.addClass("pause");
+    player.addClass("pause");
   }
+
   function play(){
+    intervalMotor();
     hiddenInfo();
+    hiddenInfoGameOver()
     viewScore();
     viewLife();
     bikinMotor();
     collisionMotor();
-
+    game.removeClass("pause");
+    player.removeClass("pause");
+    player.removeClass("mati");
     
   }
   function control(){
@@ -189,7 +249,7 @@
   }
 
   $(document).ready(function() {
-    viewInfo();
+    ready();
     control();
   });
   

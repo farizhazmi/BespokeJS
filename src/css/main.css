@@ -1,4 +1,7 @@
-
+body{ background:#f9f9f9; font-family: 'Roboto', sans-serif; overflow: hidden; }
+.detect{
+    border:1px solid black;
+}
 .wrapper {
     width: 100%;
     background:  red;
@@ -23,6 +26,13 @@
      }
 }
 #info, #papanNilai {
+    position: absolute;
+    text-align: center;
+    left: 50%;
+    top: -250px;
+    transform: translate(-50%, 0%);
+}
+.info {
     position: absolute;
     text-align: center;
     left: 50%;
@@ -88,7 +98,6 @@
     left: 50%;
     transform: translate(-50%, 0%);
     z-index: 2;
-    border: 1px solid;
 }
 .jalan{
     animation: jalan .8s steps(15) infinite;
@@ -121,7 +130,16 @@
     }
 }
 
-
+.mati{
+    width: 140px !important;
+    height: 138px !important;
+    animation: mati .7s steps(14) forwards;
+  }
+  
+  @keyframes mati {
+      from { background-position-x: 0px; background-position-y: -276px; }
+      to{ background-position-x: -1960px; background-position-y: -276px; }
+  }
 
   /*MOTOR*/
   .motor {
@@ -136,7 +154,7 @@
   
   @keyframes maju {
       from { left:1380px; }
-      to{ left: 750px; }
+      to{ left: -750px; }
   }
   
   .motor1{
@@ -166,3 +184,4 @@
       to{ background-position-y: -272px;
           background-position-x: -750px; }
   }
+  
